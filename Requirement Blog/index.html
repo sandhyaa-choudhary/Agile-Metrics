@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Requirements Funnel: An Interactive Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --fedex-purple: #4D148C;
+            --fedex-orange: #FF6600;
+            --fedex-purple-light: #6B1FB5;
+            --fedex-orange-light: #FF8533;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes flowDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .flow-down {
+            animation: flowDown 0.6s ease-out;
+        }
+        
+        .funnel-stage {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .funnel-stage:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(77, 20, 140, 0.3);
+        }
+        
+        .funnel-stage.active {
+            border: 3px solid var(--fedex-purple);
+            box-shadow: 0 0 20px rgba(77, 20, 140, 0.5);
+        }
+        
+        .filter-badge {
+            background: linear-gradient(135deg, var(--fedex-orange), #FF8533);
+            transform: skew(-5deg);
+        }
+        
+        .requirement-token {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .connector {
+            width: 3px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--fedex-purple), var(--fedex-orange));
+            margin: 0 auto;
+        }
+        
+        .source-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .source-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--fedex-purple), var(--fedex-orange));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(77, 20, 140, 0.3);
+            opacity: 0.9;
+        }
+        
+        .watermark-name {
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .watermark-role {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-orange-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <h1 class="text-4xl font-bold text-gray-800 text-center">
+                🚀 The Requirements Funnel
+            </h1>
+            <p class="text-center text-gray-600 mt-2">An Interactive Journey from Idea to Deployed Product</p>
+            <div class="mt-4 max-w-2xl mx-auto">
+                <div class="bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="progress-bar h-3 rounded-full" style="width: 0%; background: linear-gradient(to right, var(--fedex-purple), var(--fedex-orange));"></div>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-2" id="progressText">Click on any stage to explore</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Introduction -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8 slide-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🎯 Welcome to the Requirements Journey!</h2>
+            <p class="text-gray-600 mb-4">
+                This interactive guide shows how requirements flow through Agile development—from initial ideas to deployed features.
+                Each stage acts as a <strong>quality filter</strong>, ensuring only valuable, well-defined requirements make it to production.
+            </p>
+            <div class="border-l-4 p-4 rounded" style="background-color: #F3E8FF; border-color: var(--fedex-purple);">
+                <p style="color: var(--fedex-purple);">
+                    <strong>💡 How to use:</strong> Click on any stage below to learn more. Watch how requirements transform as they progress through the funnel!
+                </p>
+            </div>
+        </div>
+
+        <!-- Sources of Requirements -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6 flow-down">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">📥 Sources of Requirements</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center source-icon">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl" style="background-color: #F3E8FF;">
+                        👥
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Users</h3>
+                    <p class="text-sm text-gray-600">Pain points & needs</p>
+                </div>
+                <div class="text-center source-icon">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl" style="background-color: #FFE8D6;">
+                        💼
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Stakeholders</h3>
+                    <p class="text-sm text-gray-600">Business goals</p>
+                </div>
+                <div class="text-center source-icon">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl" style="background-color: #F3E8FF;">
+                        🌍
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Environment</h3>
+                    <p class="text-sm text-gray-600">Market forces</p>
+                </div>
+                <div class="text-center source-icon">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl" style="background-color: #FFE8D6;">
+                        📋
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Rules</h3>
+                    <p class="text-sm text-gray-600">Compliance</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 1: Product Vision Test -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter1')" data-stage="1">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                        Filter 1
+                    </span>
+                    <h3 class="text-xl font-bold text-gray-800">👁️ Product Vision Test</h3>
+                </div>
+                <div class="flex gap-2">
+                    <span class="text-3xl">✅</span>
+                    <span class="text-3xl">🗑️</span>
+                </div>
+            </div>
+            <p class="text-gray-600 mb-3">
+                <strong>Guardian:</strong> Product Owner | 
+                <strong>Question:</strong> Does this align with our product vision?
+            </p>
+            <div class="border-l-4 p-3 rounded" style="background-color: #FFE8D6; border-color: var(--fedex-orange);">
+                <p class="text-sm" style="color: #CC5200;">
+                    <strong>Critical Filter:</strong> Ideas that don't support the product vision are rejected here to prevent scope creep.
+                </p>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Backlog Organization -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('backlog')" data-stage="2">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">📊 Product Backlog Organization</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded" style="background-color: #F3E8FF;">
+                    <h4 class="font-semibold mb-2" style="color: var(--fedex-purple);">Themes</h4>
+                    <p class="text-sm text-gray-600">High-level strategic areas grouping related work</p>
+                </div>
+                <div class="p-4 rounded" style="background-color: #FFE8D6;">
+                    <h4 class="font-semibold mb-2" style="color: var(--fedex-orange);">Epics</h4>
+                    <p class="text-sm text-gray-600">Large bodies of work broken into stories</p>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <span class="text-gray-500">→ Roadmap & Prioritization →</span>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 2: Definition of Ready -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter2')" data-stage="3">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                    Filter 2
+                </span>
+                <h3 class="text-xl font-bold text-gray-800">✓ Definition of Ready</h3>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-4">
+                <div class="text-center p-4 rounded" style="background-color: #F3E8FF;">
+                    <div class="text-3xl mb-2">🔍</div>
+                    <p class="font-semibold" style="color: var(--fedex-purple);">Clear</p>
+                </div>
+                <div class="text-center p-4 rounded" style="background-color: #FFE8D6;">
+                    <div class="text-3xl mb-2">📏</div>
+                    <p class="font-semibold" style="color: var(--fedex-orange);">Small</p>
+                </div>
+                <div class="text-center p-4 rounded" style="background-color: #F3E8FF;">
+                    <div class="text-3xl mb-2">🧪</div>
+                    <p class="font-semibold" style="color: var(--fedex-purple);">Testable</p>
+                </div>
+            </div>
+            <p class="text-center text-gray-600 mt-4">
+                <strong>Output:</strong> Well-defined User Stories
+            </p>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 3: Sprint Planning -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter3')" data-stage="4">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                    Filter 3
+                </span>
+                <h3 class="text-xl font-bold text-gray-800">📅 Sprint Planning</h3>
+            </div>
+            <div class="flex items-center justify-around">
+                <div class="text-center">
+                    <div class="text-4xl mb-2">📋</div>
+                    <p class="text-sm text-gray-600">Sprint Backlog</p>
+                </div>
+                <div class="text-2xl">→</div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">✅</div>
+                    <p class="text-sm text-gray-600">Acceptance Criteria</p>
+                </div>
+                <div class="text-2xl">→</div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">🤝</div>
+                    <p class="text-sm text-gray-600">Team Commitment</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Development Phase -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('development')" data-stage="5">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">💻 Development & Integration</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-3 rounded text-center" style="background-color: #FFE8D6;">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <p class="text-sm font-semibold" style="color: var(--fedex-orange);">BDD</p>
+                </div>
+                <div class="p-3 rounded text-center" style="background-color: #F3E8FF;">
+                    <div class="text-2xl mb-2">🧪</div>
+                    <p class="text-sm font-semibold" style="color: var(--fedex-purple);">TDD</p>
+                </div>
+                <div class="text-white p-3 rounded text-center" style="background: linear-gradient(135deg, var(--fedex-purple), var(--fedex-orange));">
+                    <div class="text-2xl mb-2">💾</div>
+                    <p class="text-sm font-semibold">Code</p>
+                </div>
+                <div class="p-3 rounded text-center" style="background-color: #FFE8D6;">
+                    <div class="text-2xl mb-2">🔁</div>
+                    <p class="text-sm font-semibold" style="color: var(--fedex-orange);">CI</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 4: Definition of Done -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter4')" data-stage="6">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                    Filter 4
+                </span>
+                <h3 class="text-xl font-bold text-gray-800">✅ Definition of Done</h3>
+            </div>
+            <div class="border-2 p-4 rounded" style="background-color: #E8F5E9; border-color: #4CAF50;">
+                <ul class="space-y-2">
+                    <li class="flex items-center gap-2">
+                        <span style="color: #4CAF50;">✓</span>
+                        <span class="text-gray-700">Code written & reviewed</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span style="color: #4CAF50;">✓</span>
+                        <span class="text-gray-700">All tests passing</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span style="color: #4CAF50;">✓</span>
+                        <span class="text-gray-700">Acceptance criteria met</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span style="color: #4CAF50;">✓</span>
+                        <span class="text-gray-700">No known defects</span>
+                    </li>
+                </ul>
+            </div>
+            <p class="text-center text-gray-600 mt-4">
+                <strong>Output:</strong> Done Stories ✅
+            </p>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 5: Sprint Review -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter5')" data-stage="7">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                    Filter 5
+                </span>
+                <h3 class="text-xl font-bold text-gray-800">👥 Sprint Review</h3>
+            </div>
+            <div class="p-4 rounded" style="background-color: #F3E8FF;">
+                <p class="text-gray-700 mb-3">
+                    <strong>Demonstration to stakeholders:</strong>
+                </p>
+                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                    <li>Show completed work</li>
+                    <li>Gather feedback</li>
+                    <li>Validate implementation</li>
+                    <li>Identify adjustments</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <!-- Filter 6: Release Decision -->
+        <div class="funnel-stage bg-white rounded-lg shadow-lg p-6 mb-6 border-2 border-gray-200" 
+             onclick="showModal('filter6')" data-stage="8">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="filter-badge text-white px-4 py-2 rounded font-bold text-lg">
+                    Filter 6
+                </span>
+                <h3 class="text-xl font-bold text-gray-800">🚀 Release Decision</h3>
+            </div>
+            <div class="flex items-center justify-around">
+                <div class="text-center">
+                    <div class="text-4xl mb-2">🎯</div>
+                    <p class="text-sm text-gray-600">Product Owner<br>Decision</p>
+                </div>
+                <div class="text-2xl">→</div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">⚙️</div>
+                    <p class="text-sm text-gray-600">DevOps/<br>CD Pipeline</p>
+                </div>
+                <div class="text-2xl">→</div>
+                <div class="text-center">
+                    <div class="text-4xl mb-2">🎁</div>
+                    <p class="text-sm text-gray-600">Deployed<br>Product</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Outcome -->
+        <div class="rounded-lg shadow-lg p-8 text-white text-center float-animation" style="background: linear-gradient(135deg, var(--fedex-purple), var(--fedex-orange));">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold mb-4">Deployed Product</h2>
+            <p class="text-lg mb-4">From raw idea to production-ready feature!</p>
+            <div class="bg-white bg-opacity-20 rounded p-4 inline-block">
+                <p class="text-sm">
+                    The journey continues... Deployed products generate feedback,<br>
+                    creating new requirements and closing the loop! 🔄
+                </p>
+            </div>
+        </div>
+
+        <!-- Key Takeaways -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">🎯 Key Takeaways</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="border-l-4 pl-4" style="border-color: var(--fedex-purple);">
+                    <h3 class="font-bold text-gray-800 mb-2">Progressive Refinement</h3>
+                    <p class="text-gray-600">Requirements become more detailed and concrete as they move through the funnel.</p>
+                </div>
+                <div class="border-l-4 pl-4" style="border-color: var(--fedex-orange);">
+                    <h3 class="font-bold text-gray-800 mb-2">Quality Gates</h3>
+                    <p class="text-gray-600">Each filter ensures quality and alignment before moving forward.</p>
+                </div>
+                <div class="border-l-4 pl-4" style="border-color: var(--fedex-purple);">
+                    <h3 class="font-bold text-gray-800 mb-2">Collaboration</h3>
+                    <p class="text-gray-600">Success requires teamwork between PO, developers, testers, and stakeholders.</p>
+                </div>
+                <div class="border-l-4 pl-4" style="border-color: var(--fedex-orange);">
+                    <h3 class="font-bold text-gray-800 mb-2">Continuous Flow</h3>
+                    <p class="text-gray-600">Not a waterfall—it's a continuous cycle of building and improving.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Template -->
+    <div id="modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-8" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-start mb-6">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gray-800"></h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+            </div>
+            <div id="modalBody" class="text-gray-600"></div>
+        </div>
+    </div>
+
+    <script>
+        const modalData = {
+            filter1: {
+                title: "👁️ Filter 1: Product Vision Test",
+                body: `
+                    <div class="space-y-4">
+                        <div class="p-4 rounded" style="background-color: #F3E8FF;">
+                            <h3 class="font-bold mb-2" style="color: var(--fedex-purple);">Guardian: Product Owner</h3>
+                            <p>The Product Owner is responsible for maintaining the product vision and ensuring all requirements align with strategic goals.</p>
+                        </div>
+                        
+                        <h3 class="font-bold text-lg text-gray-800">The Critical Questions:</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Does this requirement support our product vision?</li>
+                            <li>Does it align with our strategic goals?</li>
+                            <li>Is this the right product for this feature?</li>
+                            <li>Will this add value to our target users?</li>
+                        </ul>
+                        
+                        <div class="border-l-4 p-4 rounded" style="background-color: #FFE8D6; border-color: var(--fedex-orange);">
+                            <h3 class="font-bold mb-2" style="color: #CC5200;">⚠️ Why This Filter Matters</h3>
+                            <p>Without this filter, products become bloated with features that dilute their core value proposition. Not every good idea belongs in your product!</p>
+                        </div>
+                        
+                        <h3 class="font-bold text-lg text-gray-800">Outcomes:</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="border-2 border-green-300 p-4 rounded text-center">
+                                <div class="text-4xl mb-2">✅</div>
+                                <p class="font-semibold text-green-700">Approved</p>
+                                <p class="text-sm text-gray-600">Moves to Product Backlog</p>
+                            </div>
+                            <div class="border-2 border-red-300 p-4 rounded text-center">
+                                <div class="text-4xl mb-2">🗑️</div>
+                                <p class="font-semibold text-red-700">Rejected</p>
+                                <p class="text-sm text-gray-600">Prevents scope creep</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded">
+                            <p class="text-sm italic text-gray-600">"The art of being wise is the art of knowing what to overlook." - William James</p>
+                        </div>
+                    </div>
+                `
+            },
+            backlog: {
+                title: "📊 Product Backlog Organization",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">Requirements that pass the Product Vision Test are organized in the Product Backlog using a hierarchical structure:</p>
+                        
+                        <div class="p-4 rounded" style="background-color: #F3E8FF;">
+                            <h3 class="font-bold mb-2 text-lg" style="color: var(--fedex-purple);">📚 Themes</h3>
+                            <p class="mb-3">High-level strategic areas that group related work. Themes represent major focus areas for the product.</p>
+                            <p class="text-sm text-gray-600"><strong>Examples:</strong> "User Experience Enhancement," "Platform Performance," "Security & Compliance"</p>
+                        </div>
+                        
+                        <div class="p-4 rounded" style="background-color: #FFE8D6;">
+                            <h3 class="font-bold mb-2 text-lg" style="color: var(--fedex-orange);">📖 Epics</h3>
+                            <p class="mb-3">Large bodies of work that can be broken down into smaller stories. Epics are too big to complete in a single sprint but represent significant capabilities.</p>
+                            <p class="text-sm text-gray-600"><strong>Example:</strong> "Implement Multi-Factor Authentication" might contain 8-12 user stories</p>
+                        </div>
+                        
+                        <div class="p-4 rounded" style="background-color: #F3E8FF;">
+                            <h3 class="font-bold mb-2 text-lg" style="color: var(--fedex-purple);">📝 User Stories</h3>
+                            <p class="mb-3">Specific, actionable requirements that can be completed in a sprint. Written from the user's perspective.</p>
+                            <p class="text-sm text-gray-600"><strong>Format:</strong> "As a [user], I want [goal], so that [benefit]"</p>
+                        </div>
+                        
+                        <div class="border-l-4 p-4 rounded" style="background-color: #E8F5E9; border-color: #4CAF50;">
+                            <h3 class="font-bold mb-2" style="color: #2E7D32;">🗺️ The Roadmap Connection</h3>
+                            <p>The backlog feeds into the product roadmap, which prioritizes work based on:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                                <li>Business value</li>
+                                <li>Dependencies</li>
+                                <li>Strategic timing</li>
+                                <li>Resource availability</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            filter2: {
+                title: "✓ Filter 2: Definition of Ready",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">Before a user story can be pulled into a sprint, it must meet the Definition of Ready. This ensures the team has everything needed to begin work.</p>
+                        
+                        <div class="grid gap-4">
+                            <div class="border-l-4 border-green-500 pl-4 py-2">
+                                <h3 class="font-bold text-green-800 text-lg mb-2">🔍 Clear</h3>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                    <li>Is the requirement unambiguous?</li>
+                                    <li>Do all team members understand what's being asked?</li>
+                                    <li>Are acceptance criteria well-defined?</li>
+                                    <li>Are there any ambiguous terms or unclear expectations?</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="border-l-4 border-blue-500 pl-4 py-2">
+                                <h3 class="font-bold text-blue-800 text-lg mb-2">📏 Small</h3>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                    <li>Can this be completed within a sprint?</li>
+                                    <li>Is the scope manageable?</li>
+                                    <li>If too large, can it be decomposed further?</li>
+                                    <li>Does it follow the INVEST principles?</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="border-l-4 border-purple-500 pl-4 py-2">
+                                <h3 class="font-bold text-purple-800 text-lg mb-2">🧪 Testable</h3>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                    <li>Can we verify that this requirement has been met?</li>
+                                    <li>Are there measurable success criteria?</li>
+                                    <li>Can we write automated tests for this?</li>
+                                    <li>Are acceptance criteria objective?</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <h3 class="font-bold text-yellow-800 mb-2">⚙️ The Refinement Process</h3>
+                            <p>This stage involves backlog refinement sessions where the team:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                                <li>Decomposes epics into user stories</li>
+                                <li>Writes clear acceptance criteria</li>
+                                <li>Estimates effort</li>
+                                <li>Identifies dependencies and risks</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-2">✅ INVEST Principles</h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><strong>I</strong>ndependent</div>
+                                <div><strong>N</strong>egotiable</div>
+                                <div><strong>V</strong>aluable</div>
+                                <div><strong>E</strong>stimable</div>
+                                <div><strong>S</strong>mall</div>
+                                <div><strong>T</strong>estable</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            filter3: {
+                title: "📅 Filter 3: Sprint Planning",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">Sprint Planning is where the team commits to delivering specific user stories within the sprint timeframe.</p>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-3 text-lg">🎯 Sprint Planning Activities</h3>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li><strong>Review Sprint Goal:</strong> What is the objective for this sprint?</li>
+                                <li><strong>Select Stories:</strong> Choose from the top of the Product Backlog based on priority</li>
+                                <li><strong>Capacity Check:</strong> Ensure the team has capacity to deliver</li>
+                                <li><strong>Break Down Tasks:</strong> Decompose stories into technical tasks</li>
+                                <li><strong>Estimate Effort:</strong> Team estimates how long each task will take</li>
+                                <li><strong>Commit:</strong> Team commits to the sprint backlog</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded">
+                            <h3 class="font-bold text-green-800 mb-3 text-lg">✅ Acceptance Criteria Definition</h3>
+                            <p class="mb-2">For each story, the team clearly defines:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li>What "done" looks like</li>
+                                <li>Specific conditions that must be met</li>
+                                <li>Test scenarios and edge cases</li>
+                                <li>Performance or quality requirements</li>
+                            </ul>
+                            <div class="mt-3 p-3 bg-white rounded">
+                                <p class="text-sm text-gray-600"><strong>Example:</strong> "Given a user is logged in, when they click 'Save', then the data should persist and a confirmation message should appear within 2 seconds."</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded">
+                            <h3 class="font-bold text-purple-800 mb-2">🤝 Collaborative Nature</h3>
+                            <p class="text-gray-700">Sprint planning is a team activity involving:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                                <li>Product Owner (prioritizes and clarifies)</li>
+                                <li>Development Team (estimates and commits)</li>
+                                <li>Scrum Master (facilitates)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <p class="text-yellow-800"><strong>⚠️ Important:</strong> The team should only commit to what they believe they can realistically deliver. Over-commitment leads to burnout and quality issues.</p>
+                        </div>
+                    </div>
+                `
+            },
+            development: {
+                title: "💻 Development & Continuous Integration",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">With clear acceptance criteria, development begins using modern engineering practices that ensure quality and maintainability.</p>
+                        
+                        <div class="bg-orange-50 p-4 rounded">
+                            <h3 class="font-bold text-orange-800 mb-2 text-lg">🔄 Behavior-Driven Development (BDD)</h3>
+                            <p class="text-gray-700 mb-2">Writing tests that describe the behavior of the system from the user's perspective.</p>
+                            <div class="bg-white p-3 rounded mt-2">
+                                <code class="text-sm text-gray-700">
+                                    <strong>Given</strong> a user is on the login page<br>
+                                    <strong>When</strong> they enter valid credentials<br>
+                                    <strong>Then</strong> they should be redirected to the dashboard
+                                </code>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">These tests become executable specifications that everyone can understand.</p>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded">
+                            <h3 class="font-bold text-red-800 mb-2 text-lg">🧪 Test-Driven Development (TDD)</h3>
+                            <p class="text-gray-700 mb-2">The Red-Green-Refactor cycle:</p>
+                            <ol class="list-decimal list-inside space-y-1 text-gray-700">
+                                <li><span class="text-red-600 font-semibold">Red:</span> Write a failing test</li>
+                                <li><span class="text-green-600 font-semibold">Green:</span> Write minimal code to pass the test</li>
+                                <li><span class="text-blue-600 font-semibold">Refactor:</span> Improve the code while keeping tests green</li>
+                            </ol>
+                            <p class="text-sm text-gray-600 mt-2">Benefits: Better design, higher confidence, living documentation</p>
+                        </div>
+                        
+                        <div class="bg-gray-800 text-white p-4 rounded">
+                            <h3 class="font-bold mb-2 text-lg">💾 Clean Code</h3>
+                            <p class="mb-2">Writing code that is:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Readable and self-documenting</li>
+                                <li>Maintainable and extensible</li>
+                                <li>Well-tested and reliable</li>
+                                <li>Following team conventions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-2 text-lg">🔁 Continuous Integration (CI)</h3>
+                            <p class="text-gray-700 mb-2">Automatically building, testing, and integrating code changes:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li>Developers commit code multiple times per day</li>
+                                <li>Each commit triggers automated builds</li>
+                                <li>Automated tests run on every build</li>
+                                <li>Team gets immediate feedback on integration issues</li>
+                                <li>Reduces integration problems</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded">
+                            <h3 class="font-bold text-green-800 mb-2 text-lg">🏗️ Emergent Design</h3>
+                            <p class="text-gray-700">Rather than designing everything upfront, the architecture evolves as the team:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700 mt-2">
+                                <li>Learns from implementation</li>
+                                <li>Discovers new requirements</li>
+                                <li>Refactors continuously</li>
+                                <li>Responds to change</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            filter4: {
+                title: "✅ Filter 4: Definition of Done",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">The Definition of Done is a quality gate that ensures work is truly complete before being considered "done."</p>
+                        
+                        <div class="bg-green-50 border-2 border-green-300 p-4 rounded">
+                            <h3 class="font-bold text-green-800 mb-3 text-lg">✓ Typical Definition of Done Checklist</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Code is written and reviewed</p>
+                                        <p class="text-sm text-gray-600">At least one other team member has reviewed the code</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">All tests pass</p>
+                                        <p class="text-sm text-gray-600">Unit tests, integration tests, and acceptance tests are green</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Documentation is updated</p>
+                                        <p class="text-sm text-gray-600">User docs, API docs, and inline comments are current</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Code is merged to main branch</p>
+                                        <p class="text-sm text-gray-600">No lingering feature branches</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">No known defects</p>
+                                        <p class="text-sm text-gray-600">All bugs identified during development are fixed</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Acceptance criteria met</p>
+                                        <p class="text-sm text-gray-600">All conditions defined in sprint planning are satisfied</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-green-600 text-xl">✓</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Non-functional requirements satisfied</p>
+                                        <p class="text-sm text-gray-600">Performance, security, accessibility standards met</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-2 text-lg">🧪 Acceptance Tests</h3>
+                            <p class="text-gray-700 mb-2">Automated or manual tests that verify the story meets its acceptance criteria. These tests:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li>Are written in collaboration with the Product Owner</li>
+                                <li>Validate business logic and user workflows</li>
+                                <li>Often use BDD frameworks (Cucumber, SpecFlow)</li>
+                                <li>Serve as living documentation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <h3 class="font-bold text-yellow-800 mb-2">⚠️ Why This Matters</h3>
+                            <p class="text-gray-700">Without a clear Definition of Done:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                                <li>Quality becomes subjective</li>
+                                <li>Technical debt accumulates</li>
+                                <li>Integration becomes painful</li>
+                                <li>Releases are delayed by "almost done" work</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded">
+                            <p class="text-purple-800"><strong>💡 Pro Tip:</strong> The Definition of Done should be team-owned, visible, and regularly reviewed. As the team matures, the DoD typically becomes more stringent.</p>
+                        </div>
+                    </div>
+                `
+            },
+            filter5: {
+                title: "👥 Filter 5: Sprint Review",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">The Sprint Review is a collaborative session at the end of each sprint where the team demonstrates completed work to stakeholders.</p>
+                        
+                        <div class="bg-purple-50 p-4 rounded">
+                            <h3 class="font-bold text-purple-800 mb-3 text-lg">🎯 Purpose of Sprint Review</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Show what was accomplished:</strong> Demonstrate working software, not slides or promises</li>
+                                <li><strong>Gather feedback:</strong> Get stakeholder input while it's still easy to adapt</li>
+                                <li><strong>Validate implementation:</strong> Ensure the solution meets expectations</li>
+                                <li><strong>Identify adjustments:</strong> Discover new requirements or refinements</li>
+                                <li><strong>Celebrate success:</strong> Recognize team accomplishments</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-3 text-lg">👥 Participants</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-white p-3 rounded">
+                                    <p class="font-semibold text-gray-800">Development Team</p>
+                                    <p class="text-sm text-gray-600">Demonstrates the work</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <p class="font-semibold text-gray-800">Product Owner</p>
+                                    <p class="text-sm text-gray-600">Accepts or rejects work</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <p class="font-semibold text-gray-800">Stakeholders</p>
+                                    <p class="text-sm text-gray-600">Provide feedback</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <p class="font-semibold text-gray-800">End Users</p>
+                                    <p class="text-sm text-gray-600">Validate usability</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded">
+                            <h3 class="font-bold text-green-800 mb-3 text-lg">📋 Typical Agenda</h3>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li><strong>Review Sprint Goal:</strong> Remind everyone what the objective was</li>
+                                <li><strong>Demo Completed Work:</strong> Show each done story in action</li>
+                                <li><strong>Discuss What Went Well:</strong> Highlight successes</li>
+                                <li><strong>Discuss Challenges:</strong> Share obstacles encountered</li>
+                                <li><strong>Gather Feedback:</strong> Open floor for stakeholder input</li>
+                                <li><strong>Review Product Backlog:</strong> Adjust priorities based on learnings</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <h3 class="font-bold text-yellow-800 mb-2">⚠️ Common Pitfalls to Avoid</h3>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li>Making it a status report instead of a demo</li>
+                                <li>Showing incomplete or "almost done" work</li>
+                                <li>Not inviting key stakeholders</li>
+                                <li>Dominating with technical details</li>
+                                <li>Not leaving time for feedback</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-orange-50 p-4 rounded">
+                            <p class="text-orange-800"><strong>💡 Best Practice:</strong> Keep it conversational and collaborative. This isn't a formal presentation—it's an inspection and adaptation event. Encourage questions, discussion, and honest feedback.</p>
+                        </div>
+                    </div>
+                `
+            },
+            filter6: {
+                title: "🚀 Filter 6: Release Decision",
+                body: `
+                    <div class="space-y-4">
+                        <p class="text-gray-700">The final filter determines whether the product increment is ready for release to production.</p>
+                        
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h3 class="font-bold text-blue-800 mb-3 text-lg">🎯 Release Decision Factors</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Value Threshold:</strong> Does the increment provide enough value to warrant a release?</li>
+                                <li><strong>Quality Assurance:</strong> Are there any blocking issues or critical bugs?</li>
+                                <li><strong>Business Timing:</strong> Is now the right time from a business perspective?</li>
+                                <li><strong>Stakeholder Alignment:</strong> Are all key stakeholders aligned on the release?</li>
+                                <li><strong>Market Readiness:</strong> Are customers ready for this change?</li>
+                                <li><strong>Support Preparedness:</strong> Is the support team ready to handle questions?</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded">
+                            <h3 class="font-bold text-purple-800 mb-3 text-lg">👤 Product Owner's Role</h3>
+                            <p class="text-gray-700 mb-2">The Product Owner makes the final release decision based on:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li>Business value delivered</li>
+                                <li>Market conditions</li>
+                                <li>Customer feedback</li>
+                                <li>Competitive landscape</li>
+                                <li>Strategic timing</li>
+                            </ul>
+                            <p class="text-sm text-gray-600 mt-3"><strong>Note:</strong> In mature Agile teams, increments are often releasable after every sprint, even if not immediately deployed.</p>
+                        </div>
+                        
+                        <div class="bg-gray-800 text-white p-4 rounded">
+                            <h3 class="font-bold mb-3 text-lg">⚙️ DevOps / Continuous Deployment Pipeline</h3>
+                            <p class="mb-2">Once the release decision is "go," the DevOps pipeline automates:</p>
+                            <div class="grid grid-cols-2 gap-3 mt-3">
+                                <div class="bg-white bg-opacity-10 p-3 rounded">
+                                    <p class="font-semibold">Build Automation</p>
+                                    <p class="text-sm opacity-80">Compile and package</p>
+                                </div>
+                                <div class="bg-white bg-opacity-10 p-3 rounded">
+                                    <p class="font-semibold">Test Automation</p>
+                                    <p class="text-sm opacity-80">Run full test suite</p>
+                                </div>
+                                <div class="bg-white bg-opacity-10 p-3 rounded">
+                                    <p class="font-semibold">Deployment</p>
+                                    <p class="text-sm opacity-80">Deploy to environments</p>
+                                </div>
+                                <div class="bg-white bg-opacity-10 p-3 rounded">
+                                    <p class="font-semibold">Monitoring</p>
+                                    <p class="text-sm opacity-80">Track metrics & errors</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded">
+                            <h3 class="font-bold text-green-800 mb-3 text-lg">🎁 The Deployed Product</h3>
+                            <p class="text-gray-700 mb-2">Successful deployment includes:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                <li><strong>Rollout Strategy:</strong> All at once, phased, or canary release</li>
+                                <li><strong>Monitoring:</strong> Real-time tracking of errors and performance</li>
+                                <li><strong>Rollback Plan:</strong> Quick rollback capability if issues arise</li>
+                                <li><strong>Communication:</strong> Notify users and stakeholders</li>
+                                <li><strong>Support:</strong> Ensure team is ready for user questions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                            <h3 class="font-bold text-yellow-800 mb-2">🔄 Closing the Loop</h3>
+                            <p class="text-gray-700">The journey doesn't end with deployment! The deployed product:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700">
+                                <li>Generates user feedback</li>
+                                <li>Reveals new requirements</li>
+                                <li>Validates or challenges assumptions</li>
+                                <li>Feeds back into the sources of requirements</li>
+                            </ul>
+                            <p class="text-gray-700 mt-3">This creates a continuous cycle of learning, building, and improving!</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        function showModal(key) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const data = modalData[key];
+            if (data) {
+                modalTitle.textContent = data.title;
+                modalBody.innerHTML = data.body;
+                modal.classList.add('active');
+                
+                // Update progress
+                const stage = event.currentTarget.dataset.stage;
+                if (stage) {
+                    updateProgress(parseInt(stage));
+                }
+                
+                // Highlight active stage
+                document.querySelectorAll('.funnel-stage').forEach(s => s.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+            }
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'modal') {
+                document.getElementById('modal').classList.remove('active');
+                document.querySelectorAll('.funnel-stage').forEach(s => s.classList.remove('active'));
+            }
+        }
+
+        function updateProgress(stage) {
+            const progress = (stage / 8) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Stage ${stage} of 8`;
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Add entrance animations on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('flow-down');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.funnel-stage').forEach(stage => {
+            observer.observe(stage);
+        });
+    </script>
+
+    <!-- Watermark -->
+    <div class="watermark">
+        <div class="watermark-name">Sandhya Choudhary</div>
+        <div class="watermark-role">Retail Revenue</div>
+    </div>
+</body>
+</html>
